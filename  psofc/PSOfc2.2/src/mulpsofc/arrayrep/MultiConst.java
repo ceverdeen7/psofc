@@ -32,18 +32,6 @@ import psofc.util.ReadResults;
 
 public class MultiConst {
 
-	String fname = "wine";
-	String dir = "multi_array";
-
-	DecimalFormat df = new DecimalFormat("##.##");
-	DecimalFormat dg = new DecimalFormat("##.#E0");
-
-	int noFeatures = Integer.parseInt(ReadResults.read1Line("Data/" + fname
-			+ "/noFeatures.txt"));
-	Dataset data = FileHandler.loadDataset(new File("Data/" + fname
-			+ "/Data.data"), noFeatures, ",");
-	int dimension = noFeatures * 2 - 1;
-	int numFolds = 10;
 
 	int number_of_runs = 50;
 	double w = 0.729844;
@@ -53,8 +41,22 @@ public class MultiConst {
 	Topology topology = new TopologyRing(30);
 
 
+	DecimalFormat df = new DecimalFormat("##.##");
+	DecimalFormat dg = new DecimalFormat("##.#E0");
 
-	public MultiConst(String[] args) throws IOException{
+	public MultiConst(String fn) throws IOException{
+
+		String fname = fn;
+		String dir = "file_multi_array";
+
+
+
+		int noFeatures = Integer.parseInt(ReadResults.read1Line("Data/" + fname
+				+ "/noFeatures.txt"));
+		Dataset data = FileHandler.loadDataset(new File("Data/" + fname
+				+ "/Data.data"), noFeatures, ",");
+		int dimension = noFeatures * 2 - 1;
+		int numFolds = 10;
 
 
 
@@ -197,7 +199,7 @@ public class MultiConst {
 					s.iterate(w);
 					double bestFitness = s.getParticle(0).getNeighborhoodFitness();
 
-//					System.out.println(bestFitness);
+					System.out.println(bestFitness);
 
 					int bestParticle = 0;
 
@@ -463,11 +465,11 @@ public class MultiConst {
 				CFOrg_aveAccTest_NB, CFOrg_stdAccTest_NB,
 				CFOrgAccTrainingRunsNB, CFOrg_aveTrainAcc_NB,
 				CFOrg_stdTrainAcc_NB, orgNB);
-		
+
 		System.out.println();
 		System.out.println();
 		System.out.println();
-		
+
 		LatexFormat.printBigLatexTable(fname, noFeatures, df, dg, orgDT,
 				orgKNN, orgNB, accTestRunsDT, aveAccTestDT, stdAccTestDT,
 				accTestRunsKNN, aveAccTestKNN, stdAccTestKNN, accTestRunsNB,
@@ -502,7 +504,7 @@ public class MultiConst {
 
 	public static void main(String[] args){
 		try {
-			new MultiConst(args);
+			new MultiConst(args[0]);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
