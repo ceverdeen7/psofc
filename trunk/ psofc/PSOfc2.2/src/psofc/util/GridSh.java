@@ -4,9 +4,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * The class is for output a script file for a data set
+ * This class is independently depend on the directory of the dataset.
+ * @author YAN
+ *
+ */
 public class GridSh {
 
-	static String type = "array";
+	static String type = "array_mulfc";
 	static String trCls = "DT_new";
 
 	public static void main(String[] args) throws IOException {
@@ -21,7 +27,7 @@ public class GridSh {
 
 
 		for(String fn:files){
-			gs.output(fn, gs.setContent(fn, "run_array_DT_aug_13"));
+			gs.output(fn, gs.setContent(fn, "run_array_mul_sep_16"));
 		}
 
 

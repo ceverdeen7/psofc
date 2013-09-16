@@ -463,7 +463,19 @@ public class MultiConst {
 				CFOrg_aveAccTest_NB, CFOrg_stdAccTest_NB,
 				CFOrgAccTrainingRunsNB, CFOrg_aveTrainAcc_NB,
 				CFOrg_stdTrainAcc_NB, orgNB);
-
+		
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		LatexFormat.printBigLatexTable(fname, noFeatures, df, dg, orgDT,
+				orgKNN, orgNB, accTestRunsDT, aveAccTestDT, stdAccTestDT,
+				accTestRunsKNN, aveAccTestKNN, stdAccTestKNN, accTestRunsNB,
+				aveAccTestNB, stdAccTestNB, CFOrgAccTestingRunsDT,
+				CFOrg_aveAccTest_DT, CFOrg_stdAccTest_DT,
+				CFOrgAccTestingRunsKNN, CFOrg_aveAccTest_KNN,
+				CFOrg_stdAccTest_KNN, CFOrgAccTestingRunsNB,
+				CFOrg_aveAccTest_NB, CFOrg_stdAccTest_NB);
 
 	}
 
