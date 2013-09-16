@@ -18,15 +18,15 @@ else
 
 fi
 
-cp /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_16/array_mulfcjava.jar .
-mkdir file_array_mulfc
+cp /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_16/multi_arrayjava.jar .
+mkdir file_multi_array
 cp -r /vol/grid-solar/sgeusers/daiyan/Data .
-java -jar array_mulfcjava.jar sonar
+java -jar multi_arrayjava.jar vehicle
 
-rm array_mulfcjava.jar
+rm multi_arrayjava.jar
 cp -r *  /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_16/
 rm -r Data
-rm -r file_array_mulfc
+rm -r file_multi_array
 cd /vol/grid-solar/sgeusers/daiyan
 pwd
 rm -fr /local/tmp/daiyan/$JOB_ID

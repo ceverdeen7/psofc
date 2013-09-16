@@ -12,8 +12,8 @@ import java.io.PrintWriter;
  */
 public class GridSh {
 
-	static String type = "array_mulfc";
-	static String trCls = "DT_new";
+	static String type = "multi_array";
+	static String trCls = "new";
 
 	public static void main(String[] args) throws IOException {
 
