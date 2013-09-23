@@ -39,7 +39,7 @@ public class MultiConst {
 	int number_of_particles = 30;
 	int number_of_iterations = 100;
 	Topology topology = new TopologyRing(30);
-
+	int numFolds = 10;
 
 	DecimalFormat df = new DecimalFormat("##.##");
 	DecimalFormat dg = new DecimalFormat("##.#E0");
@@ -56,10 +56,6 @@ public class MultiConst {
 		Dataset data = FileHandler.loadDataset(new File("Data/" + fname
 				+ "/Data.data"), noFeatures, ",");
 		int dimension = noFeatures * 2 - 1;
-		int numFolds = 10;
-
-
-
 
 
 
