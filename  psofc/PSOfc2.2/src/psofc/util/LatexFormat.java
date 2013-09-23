@@ -46,8 +46,8 @@ public class LatexFormat {
 				+ dg.format(stdAccTest) + " & " + ttestCFtt);// this is the CF
 																// best
 
-		System.out.print(" & " + df.format(NewMath.getBest(accTrainRuns) * 100)
-				+ " & " + df.format(aveTrainAcc * 100) + " & "
+		System.out.print(" & " + df.format(aveTrainAcc * 100)
+				+ " & " + df.format(NewMath.getBest(accTrainRuns) * 100) + " & "
 				+ dg.format(stdTrainAcc) + " & " + ttestCFtr);
 
 		System.out.println(" \\" + "\\" + "\\cline{4-12}");
