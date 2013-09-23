@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
 import net.sf.javaml.core.Dataset;
 import net.sf.javaml.core.DefaultDataset;
-import net.sf.javaml.core.DenseInstance;
-import net.sf.javaml.core.Instance;
 import net.sf.javaml.tools.data.FileHandler;
+
 import psofc.HelpDataset;
 import psofc.MyClassifier;
 import psofc.Particle;
@@ -27,12 +27,9 @@ import psofc.util.FCFunction;
 import psofc.util.LatexFormat;
 import psofc.util.NewMath;
 import psofc.util.OrgClassification;
-import psofc.util.OutputYan;
 import psofc.util.ReadResults;
 
-public class MultiConst {
-
-
+public class MultiCont_AveFC {
 	int number_of_runs = 50;
 	double w = 0.729844;
 	double c1 = 1.49618, c2 = 1.49618;
@@ -44,12 +41,10 @@ public class MultiConst {
 	DecimalFormat df = new DecimalFormat("##.##");
 	DecimalFormat dg = new DecimalFormat("##.#E0");
 
-	public MultiConst(String fn) throws IOException{
 
+	public MultiCont_AveFC(String fn) throws NumberFormatException, IOException{
 		String fname = fn;
 		String dir = "file_multi_array";
-
-
 
 		int noFeatures = Integer.parseInt(ReadResults.read1Line("Data/" + fname
 				+ "/noFeatures.txt"));
@@ -57,43 +52,9 @@ public class MultiConst {
 				+ "/Data.data"), noFeatures, ",");
 		int dimension = noFeatures * 2 - 1;
 
-
-
-
-
 		MulFeatureConstruction problem = new MulFeatureConstruction();
 
 
-
-//		problem.setMyclassifier(new MyClassifier(new Random(1))); // new
-//																	// ClassifierKNN()
-//		problem.getMyclassifier().ClassifierDT();
-
-
-
-		/**
-		 * set up the training and testing data
-		 */
-		System.out.println("multi feature construction" + fname + " with class number: " + data.classes().size());
-
-		Dataset[] folds = data.folds((numFolds), new Random(100));
-		Dataset training = new DefaultDataset();
-		Dataset testing = new DefaultDataset();
-		int[] tr = { 0, 2, 3, 5, 6, 8, 9 };
-		int[] te = { 1, 4, 7 }; // 7, 4 and 6,5 changes
-		for (int i = 0; i < tr.length; i++) {
-			training.addAll(folds[tr[i]]);
-		}
-		for (int i = 0; i < te.length; i++) {
-			testing.addAll(folds[te[i]]);
-		}
-		problem.setMyclassifier(new MyClassifier(new Random(1)));
-		problem.getMyclassifier().ClassifierDT();
-
-//		double fullTrain = problem.getMyclassifier().fullclassify(training,
-//				training);
-//		double fullTest = problem.getMyclassifier().fullclassify(training,
-//				testing);
 
 		/** Sava the results */
 		double[][][] gbestRunsIterations = new double[number_of_runs][data.classes().size()][number_of_iterations]; // get best fitness in each iterate in each run
@@ -101,15 +62,11 @@ public class MultiConst {
 
 		double[][] bestFitnessRuns = new double[number_of_runs][data.classes().size()]; // get final bestfitnes in each run
 
-
-		double[][] accTrainRunsYan = new double[number_of_runs][data.classes().size()];
-
-
 		double[][][] bestPositionRuns = new double[number_of_runs][data.classes().size()][dimension];// get the position of best results in each run;
 
 
 
-		char[][][] operatorsRuns = new char[number_of_runs][data.classes().size()][dimension - 1]; // temperory, this need to
+		char[][][][] operatorsRuns = new char[number_of_runs][data.classes().size()][dimension - 1][numFolds]; // temperory, this need to
 													// according the results of
 													// the selected operators
 
@@ -119,7 +76,6 @@ public class MultiConst {
 		/*
 		 * all the result needed
 		 */
-
 
 		double[] accTestRunsDT = new double[number_of_runs]; // the best testing accuracy in each run
 		double[] accTrainRunsDT = new double[number_of_runs];
@@ -145,8 +101,44 @@ public class MultiConst {
 		double[] CFOrgAccTrainingRunsNB = new double[number_of_runs];
 
 
+
+
+		double[][] accTestRunsDT_run = new double[number_of_runs][numFolds]; // the best testing accuracy in each run
+		double[][] accTrainRunsDT_run = new double[number_of_runs][numFolds];
+
+
+		double[][] accTestRunsKNN_run = new double[number_of_runs][numFolds]; // the best testing accuracy in each run
+		double[][] accTrainRunsKNN_run = new double[number_of_runs][numFolds];
+
+
+		double[][] accTestRunsNB_run = new double[number_of_runs][numFolds]; // the best testing accuracy in each run
+		double[][] accTrainRunsNB_run = new double[number_of_runs][numFolds];
+
+
+
+
+		double[][] CFOrgAccTestingRunsDT_run = new double[number_of_runs][numFolds];
+		double[][] CFOrgAccTrainingRunsDT_run = new double[number_of_runs][numFolds];
+
+		double[][] CFOrgAccTestingRunsKNN_run = new double[number_of_runs][numFolds];
+		double[][] CFOrgAccTrainingRunsKNN_run = new double[number_of_runs][numFolds];
+
+		double[][] CFOrgAccTestingRunsNB_run = new double[number_of_runs][numFolds];
+		double[][] CFOrgAccTrainingRunsNB_run = new double[number_of_runs][numFolds];
+
+
 		long[] timeRuns = new long[number_of_runs];
 
+
+
+		/**
+		 * set up the training and testing data
+		 */
+		System.out.println("multi feature construction for average psofc" + fname + " with class number: " + data.classes().size());
+
+		Dataset[] folds = data.folds(numFolds, new Random(100));
+		Dataset training = new DefaultDataset();
+		Dataset testing = new DefaultDataset();
 
 		/** Produce the random seeder */
 		long[] Seeder = new long[number_of_runs];
@@ -154,169 +146,205 @@ public class MultiConst {
 			Seeder[r] = r * r * r * 135 + r * r * 246 + 78;
 		}
 
+
 		/** start PSO */
 
 		for (int r = 0; r < number_of_runs; ++r) {
-			System.out.println("**********************************************************************************");
-			long initTime = System.currentTimeMillis();
-			List<ConstructedFeature> constructedfeatures = new ArrayList<MultiConst.ConstructedFeature>();
-			for(Object clz:data.classes()){
-				System.out.println("=============class: " + clz + " =================");;
+			for(int numf = 0; numf < numFolds; numf++){
 
-				RandomBing.Seeder.setSeed(Seeder[r]);
+				testing.addAll(folds[numf]);
 
-				System.out.println("RandomBing.Seeder in  " + (r + 1)
-						+ " run is:  " + Seeder[r]);
-
-				Swarm s = new Swarm();
-				problem.setClz(clz);
-				s.setProblem(problem);
-				s.getProblem().setTraining(training); // to set the classes and the
-														// attributs in feature
-														// selection();
-				s.getProblem().setNumFolds(numFolds);
-	//			s.getProblem().setFoldsTrain(foldsTrain);
-				s.getProblem().setThreshold(0.6);
-				s.setTopology(topology);
-				s.setVelocityClamp(new VelocityClampBasic());
-
-				for (int i = 0; i < number_of_particles; ++i) {
-					Particle p = new Particle();
-					p.setProblem(s.getProblem());
-					p.setSize(dimension);
-					p.setC1(c1);
-					p.setC2(c2);
-					s.addParticle(p);
-
-				}
-				s.initialize();
-
-				for(int i = 0; i < number_of_iterations; ++i){
-					s.iterate(w);
-					double bestFitness = s.getParticle(0).getNeighborhoodFitness();
-
-					System.out.println(bestFitness);
-
-					int bestParticle = 0;
-
-					for (int p = 0; p < number_of_particles; p++) {
-						if (s.getProblem().isBetter(
-								s.getParticle(p).getNeighborhoodFitness(),
-								bestFitness)) {
-							bestFitness = s.getParticle(p).getNeighborhoodFitness();
-							bestParticle = p;
-						}
-					}
-
-					gbestRunsIterations[r][constructedfeatures.size()][i] = bestFitness;
-
-					eroGbestRunsIterations[r][constructedfeatures.size()][i] = bestFitness; // TODO: fitness = error;
-
-					/*
-					 * / get the position of best results in the last generation in
-					 * each run; to get the best solution for best fitness in each
-					 * run
-					 */
-					if (i == number_of_iterations - 1) {
-						bestFitnessRuns[r][constructedfeatures.size()] = gbestRunsIterations[r][constructedfeatures.size()][i];
-						accTrainRunsYan[r][constructedfeatures.size()] = 1.0 - eroGbestRunsIterations[r][constructedfeatures.size()][i];
-						// System.arraycopy(s.getParticle(bestParticle).getNeighborhoodPosition().toArray(),
-						// 0, bestPositionRuns[r], 0, dimension);
-						for (int d = 0; d < s.getParticle(bestParticle)
-								.getNeighborhoodPosition().size(); d++) {
-							bestPositionRuns[r][constructedfeatures.size()][d] = s.getParticle(bestParticle)
-									.getNeighborhoodPosition(d);
-						}
-					}
-
-				} // end all iterations
-
-
-				operatorsRuns[r][constructedfeatures.size()] = OperatorSelection.getOpFromArray(bestPositionRuns[r][constructedfeatures.size()]);
-
-				double[] features = NewMath.Position2FeaturesArray(bestPositionRuns[r][constructedfeatures.size()]);
-
-				constructedfeatures.add(new ConstructedFeature(operatorsRuns[r][constructedfeatures.size()], features));
-
-			} // end of all classes
-
-			long estimatedTime = System.currentTimeMillis() - initTime;
-
-			timeRuns[r] = estimatedTime;
-
-			System.out.println("estimatedTime: " + estimatedTime);
-
-			List<Dataset> dtrs = new ArrayList<Dataset>();
-			List<Dataset> dtts = new ArrayList<Dataset>();
-
-
-			int inx = 0;
-			for(ConstructedFeature cf:constructedfeatures){
-				System.out.println("feature " + inx++ + ":" );
-				Dataset temTrain = training.copy();
-				Dataset temTest = testing.copy();
-
-				temTrain = HelpDataset.removeFeatures(temTrain, cf.features);
-				temTrain = FCFunction.calConstructFeaBing(temTrain, cf.operators);
-
-				dtrs.add(temTrain);
-
-
-				for(Object tcz:data.classes()){
-					System.out.println(problem.findInterval(temTrain, tcz));
-					System.out.println(problem.testFitness(temTrain, tcz));
+				for(int i =  0; i < numFolds; i++){
+					if(i != numf) training.addAll(folds[i]);
 				}
 
-				temTest = HelpDataset.removeFeatures(temTest, cf.features);
-				temTest = FCFunction.calConstructFeaBing(temTest, cf.operators);
+				System.out.println("********************************** folds: "+ numf + "************************************************");
+				long initTime = System.currentTimeMillis();
+				List<ConstructedFeature> constructedfeatures = new ArrayList<ConstructedFeature>();
+				for(Object clz:data.classes()){
+					System.out.println("=============class: " + clz + " =================");;
 
-				dtts.add(temTest);
+					RandomBing.Seeder.setSeed(Seeder[r]);
+
+					System.out.println("RandomBing.Seeder in  " + (r + 1)
+							+ " run is:  " + Seeder[r]);
+
+					Swarm s = new Swarm();
+					problem.setClz(clz);
+					s.setProblem(problem);
+					s.getProblem().setTraining(training); // to set the classes and the
+															// attributs in feature
+															// selection();
+					s.getProblem().setNumFolds(numFolds);
+		//			s.getProblem().setFoldsTrain(foldsTrain);
+					s.getProblem().setThreshold(0.6);
+					s.setTopology(topology);
+					s.setVelocityClamp(new VelocityClampBasic());
+
+					for (int i = 0; i < number_of_particles; ++i) {
+						Particle p = new Particle();
+						p.setProblem(s.getProblem());
+						p.setSize(dimension);
+						p.setC1(c1);
+						p.setC2(c2);
+						s.addParticle(p);
+
+					}
+					s.initialize();
+
+					for(int i = 0; i < number_of_iterations; ++i){
+						s.iterate(w);
+						double bestFitness = s.getParticle(0).getNeighborhoodFitness();
+
+						System.out.println(bestFitness);
+
+						int bestParticle = 0;
+
+						for (int p = 0; p < number_of_particles; p++) {
+							if (s.getProblem().isBetter(
+									s.getParticle(p).getNeighborhoodFitness(),
+									bestFitness)) {
+								bestFitness = s.getParticle(p).getNeighborhoodFitness();
+								bestParticle = p;
+							}
+						}
+
+						gbestRunsIterations[r][constructedfeatures.size()][i] = bestFitness;
+
+						eroGbestRunsIterations[r][constructedfeatures.size()][i] = bestFitness; // TODO: fitness = error;
+
+						/*
+						 * / get the position of best results in the last generation in
+						 * each run; to get the best solution for best fitness in each
+						 * run
+						 */
+						if (i == number_of_iterations - 1) {
+							bestFitnessRuns[r][constructedfeatures.size()] = gbestRunsIterations[r][constructedfeatures.size()][i];
+							// System.arraycopy(s.getParticle(bestParticle).getNeighborhoodPosition().toArray(),
+							// 0, bestPositionRuns[r], 0, dimension);
+							for (int d = 0; d < s.getParticle(bestParticle)
+									.getNeighborhoodPosition().size(); d++) {
+								bestPositionRuns[r][constructedfeatures.size()][d] = s.getParticle(bestParticle)
+										.getNeighborhoodPosition(d);
+							}
+						}
+
+					} // end all iterations
+
+
+					operatorsRuns[r][constructedfeatures.size()][numf] = OperatorSelection.getOpFromArray(bestPositionRuns[r][constructedfeatures.size()]);
+
+					double[] features = NewMath.Position2FeaturesArray(bestPositionRuns[r][constructedfeatures.size()]);
+
+					constructedfeatures.add(new ConstructedFeature(operatorsRuns[r][constructedfeatures.size()][numf], features));
+
+				} // end of all classes
+
+				long estimatedTime = System.currentTimeMillis() - initTime;
+
+				timeRuns[r] = estimatedTime;
+
+				System.out.println("estimatedTime: " + estimatedTime);
+
+				List<Dataset> dtrs = new ArrayList<Dataset>();
+				List<Dataset> dtts = new ArrayList<Dataset>();
+
+
+				int inx = 0;
+				for(ConstructedFeature cf:constructedfeatures){
+					System.out.println("feature " + inx++ + ":" );
+					Dataset temTrain = training.copy();
+					Dataset temTest = testing.copy();
+
+					temTrain = HelpDataset.removeFeatures(temTrain, cf.features);
+					temTrain = FCFunction.calConstructFeaBing(temTrain, cf.operators);
+
+					dtrs.add(temTrain);
+
+
+					for(Object tcz:data.classes()){
+						System.out.println(problem.findInterval(temTrain, tcz));
+						System.out.println(problem.testFitness(temTrain, tcz));
+					}
+
+					temTest = HelpDataset.removeFeatures(temTest, cf.features);
+					temTest = FCFunction.calConstructFeaBing(temTest, cf.operators);
+
+					dtts.add(temTest);
+				}
+
+
+				Dataset multTrain = FCFunction.constrMulDataset(dtrs);
+				Dataset multTest = FCFunction.constrMulDataset(dtts);
+
+
+
+				int dataSetSize = data.size() + data.classes().size();
+
+
+				Dataset cforgTr = FCFunction.constrMulOrgDataset(training.copy(), multTrain, dataSetSize, noFeatures);
+				Dataset cforgTt = FCFunction.constrMulOrgDataset(testing.copy(), multTest, dataSetSize, noFeatures);
+
+				MyClassifier mc = new MyClassifier(new Random(1));
+				mc.ClassifierDT();
+
+				accTestRunsDT_run[r][numf] = mc.classify(multTrain, multTest);
+				System.err.println("runs at " + r + " and folds " + numf + " : " + accTestRunsDT_run[r][numf]);
+				accTrainRunsDT_run[r][numf] = mc.classify(multTrain, multTrain);
+				System.err.println("runs at " + r + " and folds " + numf + " : " + accTrainRunsDT_run[r][numf]);
+
+				CFOrgAccTestingRunsDT_run[r][numf] = mc.classify(cforgTr, cforgTt);
+				System.err.println("cforgtt runs at " + r + " and folds " + numf + " : " +  CFOrgAccTestingRunsDT_run[r][numf]);
+				CFOrgAccTrainingRunsDT_run[r][numf] = mc.classify(cforgTr, cforgTr);
+				System.err.println("cforgtr runs at " + r + " and folds " + numf + " : " +  CFOrgAccTrainingRunsDT_run[r][numf]);
+
+
+				mc.ClassifierKNN();
+				accTestRunsKNN_run[r][numf] = mc.classify(multTrain,  multTest);
+				accTrainRunsKNN_run[r][numf] = mc.classify(multTrain, multTrain);
+
+				CFOrgAccTestingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTt);
+				CFOrgAccTrainingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTr);
+
+				mc.ClassifierNB();
+				accTestRunsNB_run[r][numf] = mc.classify(multTrain, multTest);
+				accTrainRunsNB_run[r][numf] = mc.classify(multTrain, multTrain);
+
+				CFOrgAccTestingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTt);
+				CFOrgAccTrainingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTr);
+
+
+
 			}
 
+			System.out.println("<<<<<<<<<=======================================================>>>>>>>>>>");
 
-			Dataset multTrain = FCFunction.constrMulDataset(dtrs);
-			Dataset multTest = FCFunction.constrMulDataset(dtts);
-
-
-
-			int dataSetSize = data.size() + data.classes().size();
-
-
-			Dataset cforgTr = FCFunction.constrMulOrgDataset(training.copy(), multTrain, dataSetSize, noFeatures);
-			Dataset cforgTt = FCFunction.constrMulOrgDataset(testing.copy(), multTest, dataSetSize, noFeatures);
-
-			MyClassifier mc = new MyClassifier(new Random(1));
-			mc.ClassifierDT();
-
-			accTestRunsDT[r] = mc.classify(multTrain, multTest);
-			System.err.println("runs at " + r + ": " + accTestRunsDT[r]);
-			accTrainRunsDT[r] = mc.classify(multTrain, multTrain);
+			accTestRunsDT[r] = NewMath.mean(accTestRunsDT_run[r]);
+			System.err.println("runs at " + r + " : " + accTestRunsDT[r]);
+			accTrainRunsDT[r] = NewMath.mean(accTrainRunsDT_run[r]);
 			System.err.println("runs at " + r + ": " + accTrainRunsDT[r]);
 
-			CFOrgAccTestingRunsDT[r] = mc.classify(cforgTr, cforgTt);
-			System.err.println("cforgtt runs at " + r + ": " + CFOrgAccTestingRunsDT[r]);
-			CFOrgAccTrainingRunsDT[r] = mc.classify(cforgTr, cforgTr);
-			System.err.println("cforgtr runs at " + r + ": " + CFOrgAccTrainingRunsDT[r]);
+			CFOrgAccTestingRunsDT[r] = NewMath.mean(CFOrgAccTestingRunsDT_run[r]);
+			System.err.println("cforgtt runs at " + r + " : " +  CFOrgAccTestingRunsDT[r]);
+			CFOrgAccTrainingRunsDT[r] = NewMath.mean(CFOrgAccTrainingRunsDT_run[r]);
+			System.err.println("cforgtr runs at " + r + " : " +  CFOrgAccTrainingRunsDT[r]);
+
+			accTestRunsKNN[r] = NewMath.mean(accTestRunsKNN_run[r]);
+			accTrainRunsKNN[r] = NewMath.mean(accTrainRunsKNN_run[r]);
+
+			CFOrgAccTestingRunsKNN[r] = NewMath.mean(CFOrgAccTestingRunsKNN_run[r]);
+			CFOrgAccTrainingRunsKNN[r] = NewMath.mean(CFOrgAccTrainingRunsKNN_run[r]);
 
 
-			mc.ClassifierKNN();
-			accTestRunsKNN[r] = mc.classify(multTrain,  multTest);
-			accTrainRunsKNN[r] = mc.classify(multTrain, multTrain);
+			accTestRunsNB[r] = NewMath.mean(accTestRunsNB_run[r]);
+			accTrainRunsNB[r] = NewMath.mean(accTrainRunsNB_run[r]);
 
-			CFOrgAccTestingRunsKNN[r] = mc.classify(cforgTr, cforgTt);
-			CFOrgAccTrainingRunsKNN[r] = mc.classify(cforgTr, cforgTr);
-
-			mc.ClassifierNB();
-			accTestRunsNB[r] = mc.classify(multTrain, multTest);
-			accTrainRunsNB[r] = mc.classify(multTrain, multTrain);
-
-			CFOrgAccTestingRunsNB[r] = mc.classify(cforgTr, cforgTt);
-			CFOrgAccTrainingRunsNB[r] = mc.classify(cforgTr, cforgTr);
+			CFOrgAccTestingRunsNB[r] = NewMath.mean(CFOrgAccTestingRunsNB_run[r]);
+			CFOrgAccTrainingRunsNB[r] = NewMath.mean(CFOrgAccTrainingRunsNB_run[r]);
 
 		} // end of all runs
 
 		System.out.println("end of the program");
-
 
 		System.out.println("");
 		double aveAccTestDT = NewMath.Mean_STD(accTestRunsDT, accTestRunsDT.length)[0];
@@ -475,9 +503,8 @@ public class MultiConst {
 				CFOrg_stdAccTest_KNN, CFOrgAccTestingRunsNB,
 				CFOrg_aveAccTest_NB, CFOrg_stdAccTest_NB);
 
+
 	}
-
-
 
 	private void printFile(String fname, double[] val) throws IOException{
 		PrintWriter wf = new PrintWriter(new FileWriter(fname));
@@ -487,8 +514,7 @@ public class MultiConst {
 		wf.close();
 	}
 
-
-	private class ConstructedFeature{
+	public class ConstructedFeature{
 		char[] operators;
 		double[] features;
 		public ConstructedFeature(char[] op, double[] ft){
@@ -497,10 +523,9 @@ public class MultiConst {
 		}
 	}
 
-
 	public static void main(String[] args){
 		try {
-			new MultiConst(args[0]);
+			new MultiCont_AveFC("wine");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
