@@ -299,19 +299,19 @@ public class MultiCont_AveFC {
 				System.err.println("cforgtr runs at " + r + " and folds " + numf + " : " +  CFOrgAccTrainingRunsDT_run[r][numf]);
 
 
-				mc.ClassifierKNN();
-				accTestRunsKNN_run[r][numf] = mc.classify(multTrain,  multTest);
-				accTrainRunsKNN_run[r][numf] = mc.classify(multTrain, multTrain);
+//				mc.ClassifierKNN();
+//				accTestRunsKNN_run[r][numf] = mc.classify(multTrain,  multTest);
+//				accTrainRunsKNN_run[r][numf] = mc.classify(multTrain, multTrain);
+//
+//				CFOrgAccTestingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTt);
+//				CFOrgAccTrainingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTr);
 
-				CFOrgAccTestingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTt);
-				CFOrgAccTrainingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTr);
-
-				mc.ClassifierNB();
-				accTestRunsNB_run[r][numf] = mc.classify(multTrain, multTest);
-				accTrainRunsNB_run[r][numf] = mc.classify(multTrain, multTrain);
-
-				CFOrgAccTestingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTt);
-				CFOrgAccTrainingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTr);
+//				mc.ClassifierNB();
+//				accTestRunsNB_run[r][numf] = mc.classify(multTrain, multTest);
+//				accTrainRunsNB_run[r][numf] = mc.classify(multTrain, multTrain);
+//
+//				CFOrgAccTestingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTt);
+//				CFOrgAccTrainingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTr);
 
 
 

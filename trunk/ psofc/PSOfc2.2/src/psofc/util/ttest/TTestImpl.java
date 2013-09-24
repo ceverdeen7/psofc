@@ -79,6 +79,13 @@ public class TTestImpl {
 
 	}
 
+	public static String testTr(String fname, String dir, String classifier, String ds, double fullTestAccDT) {
+
+		String fnameDT = dir + "/" + fname + ds+ classifier + "Training.txt";
+		return ttest(fnameDT, fullTestAccDT);
+
+	}
+
 
 	@Deprecated
 	public static String ttest(double[] testAcc, double fullAccorg) {

@@ -305,13 +305,13 @@ public class MultiConst {
 
 			CFOrgAccTestingRunsKNN[r] = mc.classify(cforgTr, cforgTt);
 			CFOrgAccTrainingRunsKNN[r] = mc.classify(cforgTr, cforgTr);
-
-			mc.ClassifierNB();
-			accTestRunsNB[r] = mc.classify(multTrain, multTest);
-			accTrainRunsNB[r] = mc.classify(multTrain, multTrain);
-
-			CFOrgAccTestingRunsNB[r] = mc.classify(cforgTr, cforgTt);
-			CFOrgAccTrainingRunsNB[r] = mc.classify(cforgTr, cforgTr);
+//
+//			mc.ClassifierNB();
+//			accTestRunsNB[r] = mc.classify(multTrain, multTest);
+//			accTrainRunsNB[r] = mc.classify(multTrain, multTrain);
+//
+//			CFOrgAccTestingRunsNB[r] = mc.classify(cforgTr, cforgTt);
+//			CFOrgAccTrainingRunsNB[r] = mc.classify(cforgTr, cforgTr);
 
 		} // end of all runs
 

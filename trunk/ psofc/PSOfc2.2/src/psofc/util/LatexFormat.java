@@ -28,8 +28,10 @@ public class LatexFormat {
 //		String ttestCFtt = "";
 //		String ttestCFOrgtt = "";
 
-		String ttestCFtr = "";
-		String ttestCFOrgtr = "";
+		String ttestCFtr = TTestImpl.testTr(fname, dir, cf, "CF",
+				Double.parseDouble(df.format(accorg)));
+		String ttestCFOrgtr = TTestImpl.testTr(fname, dir, cf, "CFOrg",
+				Double.parseDouble(df.format(accorg)));
 
 		System.out.print("\\multirow{3}{*}{" + fname + "}" + " & "
 				+ "\\multirow{3}{*}{" + noFeatures + "}" + "&"
