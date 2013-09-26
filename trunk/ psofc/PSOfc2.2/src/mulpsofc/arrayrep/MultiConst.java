@@ -37,7 +37,7 @@ public class MultiConst {
 	double w = 0.729844;
 	double c1 = 1.49618, c2 = 1.49618;
 	int number_of_particles = 30;
-	int number_of_iterations = 100;
+	int number_of_iterations = 50;
 	Topology topology = new TopologyRing(30);
 	int numFolds = 10;
 
@@ -81,6 +81,8 @@ public class MultiConst {
 		Dataset testing = new DefaultDataset();
 		int[] tr = { 0, 2, 3, 5, 6, 8, 9 };
 		int[] te = { 1, 4, 7 }; // 7, 4 and 6,5 changes
+//		int[] tr = { 0, 1, 2, 3, 5, 6, 7, 8, 9 };
+//		int[] te = {4}; // 7, 4 and 6,5 changes
 		for (int i = 0; i < tr.length; i++) {
 			training.addAll(folds[tr[i]]);
 		}
@@ -305,13 +307,13 @@ public class MultiConst {
 
 			CFOrgAccTestingRunsKNN[r] = mc.classify(cforgTr, cforgTt);
 			CFOrgAccTrainingRunsKNN[r] = mc.classify(cforgTr, cforgTr);
-//
-//			mc.ClassifierNB();
-//			accTestRunsNB[r] = mc.classify(multTrain, multTest);
-//			accTrainRunsNB[r] = mc.classify(multTrain, multTrain);
-//
-//			CFOrgAccTestingRunsNB[r] = mc.classify(cforgTr, cforgTt);
-//			CFOrgAccTrainingRunsNB[r] = mc.classify(cforgTr, cforgTr);
+
+			mc.ClassifierNB();
+			accTestRunsNB[r] = mc.classify(multTrain, multTest);
+			accTrainRunsNB[r] = mc.classify(multTrain, multTrain);
+
+			CFOrgAccTestingRunsNB[r] = mc.classify(cforgTr, cforgTt);
+			CFOrgAccTrainingRunsNB[r] = mc.classify(cforgTr, cforgTr);
 
 		} // end of all runs
 
@@ -432,6 +434,19 @@ public class MultiConst {
 
 
 
+		this.printFile(dir + "/" + fname + "CFDTTraining.txt", accTrainRunsDT);
+		this.printFile(dir + "/" + fname + "CFOrgDTTraining.txt",CFOrgAccTrainingRunsDT);
+
+		this.printFile(dir + "/" + fname + "CFKNNTraining.txt", accTrainRunsKNN);
+		this.printFile(dir + "/" + fname + "CFOrgKNNTraining.txt", CFOrgAccTrainingRunsKNN);
+
+		this.printFile(dir + "/" + fname + "CFNBTraining.txt", accTrainRunsNB);
+		this.printFile(dir + "/" + fname + "CFOrgNBTraining.txt", CFOrgAccTrainingRunsNB);
+
+		this.printOperatorFile(dir + "/" + fname + "Operators.txt", operatorsRuns);
+
+		this.printFile(dir + "/" + fname + "times.txt", timeRuns);
+
 		double[] orgTest = OrgClassification.excuteClassification2(fname);
 
 		double orgDT = orgTest[0];
@@ -487,6 +502,32 @@ public class MultiConst {
 		wf.close();
 	}
 
+	private void printFile(String fname, long[] val) throws IOException{
+		PrintWriter wf = new PrintWriter(new FileWriter(fname));
+		for (int r = 0; r < number_of_runs; ++r) {
+			wf.println(df.format(val[r]));
+		}
+		wf.close();
+	}
+
+	private void printOperatorFile(String fname, char[][][] val) throws IOException{
+		PrintWriter wf = new PrintWriter(new FileWriter(fname));
+		for (int r = 0; r < number_of_runs; ++r) {
+			wf.println("run at: " + r);
+			for(int j = 0; j < val[r].length; j++){
+				for(int i = 0; i < val[r][j].length; i++){
+					wf.print(val[r][j][i] + " ");
+				}
+				wf.println();
+			}
+
+
+		}
+		wf.close();
+
+	}
+
+
 
 	private class ConstructedFeature{
 		char[] operators;
@@ -500,7 +541,7 @@ public class MultiConst {
 
 	public static void main(String[] args){
 		try {
-			new MultiConst(args[0]);
+			new MultiConst("wine");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
