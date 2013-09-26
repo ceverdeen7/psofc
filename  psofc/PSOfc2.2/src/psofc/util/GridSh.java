@@ -27,7 +27,7 @@ public class GridSh {
 
 
 		for(String fn:files){
-			gs.output(fn, gs.setContent(fn, "run_array_mul_sep_16"));
+			gs.output(fn, gs.setContent(fn, "run_array_mul_sep_26"));
 		}
 
 

@@ -127,7 +127,7 @@ public class MultiCont_AveFC {
 		double[][] CFOrgAccTrainingRunsNB_run = new double[number_of_runs][numFolds];
 
 
-		long[] timeRuns = new long[number_of_runs];
+		long[][] timeRuns = new long[number_of_runs][numFolds];
 
 
 
@@ -152,12 +152,12 @@ public class MultiCont_AveFC {
 		for (int r = 0; r < number_of_runs; ++r) {
 			for(int numf = 0; numf < numFolds; numf++){
 
-				testing.addAll(folds[numf]);
+
 
 				for(int i =  0; i < numFolds; i++){
 					if(i != numf) training.addAll(folds[i]);
 				}
-
+				testing.addAll(folds[numf]);
 				System.out.println("********************************** folds: "+ numf + "************************************************");
 				long initTime = System.currentTimeMillis();
 				List<ConstructedFeature> constructedfeatures = new ArrayList<ConstructedFeature>();
@@ -196,7 +196,7 @@ public class MultiCont_AveFC {
 						s.iterate(w);
 						double bestFitness = s.getParticle(0).getNeighborhoodFitness();
 
-						System.out.println(bestFitness);
+//						System.out.println(bestFitness);
 
 						int bestParticle = 0;
 
@@ -242,7 +242,7 @@ public class MultiCont_AveFC {
 
 				long estimatedTime = System.currentTimeMillis() - initTime;
 
-				timeRuns[r] = estimatedTime;
+				timeRuns[r][numf] = estimatedTime;
 
 				System.out.println("estimatedTime: " + estimatedTime);
 
@@ -457,6 +457,16 @@ public class MultiCont_AveFC {
 
 		this.printFile(dir + "/" + fname + "CFNBTesting.txt", accTestRunsNB);
 		this.printFile(dir + "/" + fname + "CFOrgNBTesting.txt", CFOrgAccTestingRunsNB);
+
+
+		this.printFile(dir + "/" + fname + "CFDTTraining.txt", accTrainRunsDT);
+		this.printFile(dir + "/" + fname + "CFOrgDTTraining.txt",CFOrgAccTrainingRunsDT);
+
+		this.printFile(dir + "/" + fname + "CFKNNTraining.txt", accTrainRunsKNN);
+		this.printFile(dir + "/" + fname + "CFOrgKNNTraining.txt", CFOrgAccTrainingRunsKNN);
+
+		this.printFile(dir + "/" + fname + "CFNBTraining.txt", accTrainRunsNB);
+		this.printFile(dir + "/" + fname + "CFOrgNBTraining.txt", CFOrgAccTrainingRunsNB);
 
 
 
