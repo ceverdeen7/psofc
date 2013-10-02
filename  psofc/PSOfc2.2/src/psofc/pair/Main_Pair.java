@@ -709,6 +709,10 @@ public class Main_Pair {
 			double orgNB = orgTest[2];
 			System.out.println(orgDT + " " + orgKNN + " " + orgNB);
 
+			double orgDTtr = orgTest[3];
+			double orgKNNtr = orgTest[4];
+			double orgNBtr = orgTest[5];
+
 			/**
 			 * This is for the indiviual checking
 			 */
@@ -718,21 +722,21 @@ public class Main_Pair {
 					aveTrainAccDT, stdTrainAccDT, CFOrgAccTestingRunsDT,
 					CFOrg_aveAccTest_DT, CFOrg_stdAccTest_DT,
 					CFOrgAccTrainingRunsDT, CFOrg_aveTrainAcc_DT,
-					CFOrg_stdTrainAcc_DT, orgDT);
+					CFOrg_stdTrainAcc_DT, orgDT, orgDTtr);
 
 			LatexFormat.printClassifier("KNN", fname, noFeatures, df, dg,
 					accTestRunsKNN, aveAccTestKNN, stdAccTestKNN,
 					accTrainRunsKNN, aveTrainAccKNN, stdTrainAccKNN,
 					CFOrgAccTestingRunsKNN, CFOrg_aveAccTest_KNN,
 					CFOrg_stdAccTest_KNN, CFOrgAccTrainingRunsKNN,
-					CFOrg_aveTrainAcc_KNN, CFOrg_stdTrainAcc_KNN, orgKNN);
+					CFOrg_aveTrainAcc_KNN, CFOrg_stdTrainAcc_KNN, orgKNN, orgKNNtr);
 
 			LatexFormat.printClassifier("NB", fname, noFeatures, df, dg,
 					accTestRunsNB, aveAccTestNB, stdAccTestNB, accTrainRunsNB,
 					aveTrainAccNB, stdTrainAccNB, CFOrgAccTestingRunsNB,
 					CFOrg_aveAccTest_NB, CFOrg_stdAccTest_NB,
 					CFOrgAccTrainingRunsNB, CFOrg_aveTrainAcc_NB,
-					CFOrg_stdTrainAcc_NB, orgNB);
+					CFOrg_stdTrainAcc_NB, orgNB, orgNBtr);
 
 			System.out
 					.println("=================================================");

@@ -186,7 +186,7 @@ public class OrgClassification {
 
       System.out.println();
 
-      double[] result = {fullTestDT * 100, fullTestKNN * 100, fullTestNB * 100};
+      double[] result = {fullTestDT * 100, fullTestKNN * 100, fullTestNB * 100, fullTrainDT * 100, fullTrainKNN * 100, fullTrainNB * 100};
       return result;
 	}
 
