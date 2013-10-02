@@ -18,13 +18,13 @@ else
 
 fi
 
-cp /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_16/multi_arrayjava.jar .
+cp /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_26/multi_arrayjava.jar .
 mkdir file_multi_array
 cp -r /vol/grid-solar/sgeusers/daiyan/Data .
 java -jar multi_arrayjava.jar movementlibras
 
 rm multi_arrayjava.jar
-cp -r *  /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_16/
+cp -r *  /vol/grid-solar/sgeusers/daiyan/run_array_mul_sep_26/
 rm -r Data
 rm -r file_multi_array
 cd /vol/grid-solar/sgeusers/daiyan

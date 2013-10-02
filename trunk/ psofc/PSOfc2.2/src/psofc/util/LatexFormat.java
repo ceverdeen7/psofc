@@ -18,7 +18,7 @@ public class LatexFormat {
 			double aveTrainAcc, double stdTrainAcc,
 			double[] CFOrgAccTestingRuns, double CFOrg_aveAccTest_,
 			double CFOrg_stdAccTest_, double[] CFOrgAccTrainingRuns,
-			double CFOrg_aveTrainAcc_, double CFOrg_stdTrainAcc_, double accorg) {
+			double CFOrg_aveTrainAcc_, double CFOrg_stdTrainAcc_, double accorg, double accorgTr) {
 
 		String ttestCFtt = TTestImpl.test2(fname, dir, cf, "CF",
 				Double.parseDouble(df.format(accorg)));
@@ -29,16 +29,16 @@ public class LatexFormat {
 //		String ttestCFOrgtt = "";
 
 		String ttestCFtr = TTestImpl.testTr(fname, dir, cf, "CF",
-				Double.parseDouble(df.format(accorg)));
+				Double.parseDouble(df.format(accorgTr)));
 		String ttestCFOrgtr = TTestImpl.testTr(fname, dir, cf, "CFOrg",
-				Double.parseDouble(df.format(accorg)));
+				Double.parseDouble(df.format(accorgTr)));
 
 		System.out.print("\\multirow{3}{*}{" + fname + "}" + " & "
 				+ "\\multirow{3}{*}{" + noFeatures + "}" + "&"
 				+ "\\multirow{3}{*}{" + cf + "}" + " & Org" + " &"
 				+ df.format(accorg) + "&");
 
-		System.out.print(" & " + " & " + " & " + " & " + " & " + " &"); // all
+		System.out.print(" & " + " & " + " & " + df.format(accorgTr) + " & " + " & " + " &"); // all
 																		// best
 
 		System.out.println(" \\" + "\\" + "\\cline{4-12}");
