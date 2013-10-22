@@ -1,12 +1,15 @@
 package mulpsofc.arrayrep;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -34,7 +37,7 @@ public class MultiCont_AveFC {
 	double w = 0.729844;
 	double c1 = 1.49618, c2 = 1.49618;
 	int number_of_particles = 30;
-	int number_of_iterations = 100;
+	int number_of_iterations = 70;	// TODO: itrs
 	Topology topology = new TopologyRing(30);
 	int numFolds = 10;
 
@@ -151,9 +154,8 @@ public class MultiCont_AveFC {
 
 		for (int r = 0; r < number_of_runs; ++r) {
 			for(int numf = 0; numf < numFolds; numf++){
-
-
-
+				training.clear();
+				testing.clear();
 				for(int i =  0; i < numFolds; i++){
 					if(i != numf) training.addAll(folds[i]);
 				}
@@ -196,7 +198,7 @@ public class MultiCont_AveFC {
 						s.iterate(w);
 						double bestFitness = s.getParticle(0).getNeighborhoodFitness();
 
-//						System.out.println(bestFitness);
+						System.out.println(bestFitness);
 
 						int bestParticle = 0;
 
@@ -252,7 +254,7 @@ public class MultiCont_AveFC {
 
 				int inx = 0;
 				for(ConstructedFeature cf:constructedfeatures){
-					System.out.println("feature " + inx++ + ":" );
+					System.err.println("feature " + inx++ + ":" );
 					Dataset temTrain = training.copy();
 					Dataset temTest = testing.copy();
 
@@ -263,8 +265,8 @@ public class MultiCont_AveFC {
 
 
 					for(Object tcz:data.classes()){
-						System.out.println(problem.findInterval(temTrain, tcz));
-						System.out.println(problem.testFitness(temTrain, tcz));
+						System.err.println(problem.findInterval(temTrain, tcz));
+						System.err.println(problem.testFitness(temTrain, tcz));
 					}
 
 					temTest = HelpDataset.removeFeatures(temTest, cf.features);
@@ -277,57 +279,54 @@ public class MultiCont_AveFC {
 				Dataset multTrain = FCFunction.constrMulDataset(dtrs);
 				Dataset multTest = FCFunction.constrMulDataset(dtts);
 
+				this.printCFs(dir + "/" + fname + "CFtr.txt", multTrain);
+				this.printCFs(dir + "/" + fname + "CFtt.txt", multTest);
 
 
-				int dataSetSize = data.size() + data.classes().size();
+
+				int dataSetSize = noFeatures + data.classes().size();
 
 
 				Dataset cforgTr = FCFunction.constrMulOrgDataset(training.copy(), multTrain, dataSetSize, noFeatures);
 				Dataset cforgTt = FCFunction.constrMulOrgDataset(testing.copy(), multTest, dataSetSize, noFeatures);
+				this.printCFs(dir + "/" + fname + "CFOrgtr.txt", cforgTr);
+				this.printCFs(dir + "/" + fname + "CFOrgtt.txt", cforgTt);
 
 				MyClassifier mc = new MyClassifier(new Random(1));
 				mc.ClassifierDT();
 
 				accTestRunsDT_run[r][numf] = mc.classify(multTrain, multTest);
-				System.err.println("runs at " + r + " and folds " + numf + " : " + accTestRunsDT_run[r][numf]);
 				accTrainRunsDT_run[r][numf] = mc.classify(multTrain, multTrain);
-				System.err.println("runs at " + r + " and folds " + numf + " : " + accTrainRunsDT_run[r][numf]);
 
 				CFOrgAccTestingRunsDT_run[r][numf] = mc.classify(cforgTr, cforgTt);
-				System.err.println("cforgtt runs at " + r + " and folds " + numf + " : " +  CFOrgAccTestingRunsDT_run[r][numf]);
 				CFOrgAccTrainingRunsDT_run[r][numf] = mc.classify(cforgTr, cforgTr);
-				System.err.println("cforgtr runs at " + r + " and folds " + numf + " : " +  CFOrgAccTrainingRunsDT_run[r][numf]);
 
 
-//				mc.ClassifierKNN();
-//				accTestRunsKNN_run[r][numf] = mc.classify(multTrain,  multTest);
-//				accTrainRunsKNN_run[r][numf] = mc.classify(multTrain, multTrain);
-//
-//				CFOrgAccTestingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTt);
-//				CFOrgAccTrainingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTr);
+				mc.ClassifierKNN();
+				accTestRunsKNN_run[r][numf] = mc.classify(multTrain,  multTest);
+				accTrainRunsKNN_run[r][numf] = mc.classify(multTrain, multTrain);
 
-//				mc.ClassifierNB();
-//				accTestRunsNB_run[r][numf] = mc.classify(multTrain, multTest);
-//				accTrainRunsNB_run[r][numf] = mc.classify(multTrain, multTrain);
-//
-//				CFOrgAccTestingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTt);
-//				CFOrgAccTrainingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTr);
+				CFOrgAccTestingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTt);
+				CFOrgAccTrainingRunsKNN_run[r][numf] = mc.classify(cforgTr, cforgTr);
+
+				mc.ClassifierNB();
+				accTestRunsNB_run[r][numf] = mc.classify(multTrain, multTest);
+				accTrainRunsNB_run[r][numf] = mc.classify(multTrain, multTrain);
+
+				CFOrgAccTestingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTt);
+				CFOrgAccTrainingRunsNB_run[r][numf] = mc.classify(cforgTr, cforgTr);
 
 
 
-			}
+			} // end of all folds
 
 			System.out.println("<<<<<<<<<=======================================================>>>>>>>>>>");
 
 			accTestRunsDT[r] = NewMath.mean(accTestRunsDT_run[r]);
-			System.err.println("runs at " + r + " : " + accTestRunsDT[r]);
 			accTrainRunsDT[r] = NewMath.mean(accTrainRunsDT_run[r]);
-			System.err.println("runs at " + r + ": " + accTrainRunsDT[r]);
 
 			CFOrgAccTestingRunsDT[r] = NewMath.mean(CFOrgAccTestingRunsDT_run[r]);
-			System.err.println("cforgtt runs at " + r + " : " +  CFOrgAccTestingRunsDT[r]);
 			CFOrgAccTrainingRunsDT[r] = NewMath.mean(CFOrgAccTrainingRunsDT_run[r]);
-			System.err.println("cforgtr runs at " + r + " : " +  CFOrgAccTrainingRunsDT[r]);
 
 			accTestRunsKNN[r] = NewMath.mean(accTestRunsKNN_run[r]);
 			accTrainRunsKNN[r] = NewMath.mean(accTrainRunsKNN_run[r]);
@@ -469,6 +468,9 @@ public class MultiCont_AveFC {
 		this.printFile(dir + "/" + fname + "CFOrgNBTraining.txt", CFOrgAccTrainingRunsNB);
 
 
+		this.printFile(dir + "/" + fname + "times.txt", timeRuns);
+
+		this.printOperatorFile(dir + "/" + fname + "operators.txt", operatorsRuns);
 
 		double[] orgTest = OrgClassification.excuteClassification2(fname);
 
@@ -529,6 +531,62 @@ public class MultiCont_AveFC {
 		wf.close();
 	}
 
+	private void printFile(String fname, long[][] val) throws IOException{
+		PrintWriter wf = new PrintWriter(new FileWriter(fname));
+		for (int r = 0; r < number_of_runs; ++r) {
+
+			for(int f = 0; f < numFolds; f++){
+				wf.println(df.format(val[r][f]));
+			}
+			wf.println();
+			wf.println();
+
+
+		}
+		wf.close();
+	}
+
+	private void printOperatorFile(String fname, char[][][][] val) throws IOException{
+		PrintWriter wf = new PrintWriter(new FileWriter(fname));
+		for (int r = 0; r < number_of_runs; ++r) {
+			wf.println("run at: " + r);
+			for(int j = 0; j < val[r].length; j++){
+				wf.println("class at: " + j);
+				for(int i = 0; i < val[r][j].length; i++){
+					wf.println("folders at: " + i);
+					for(int f = 0; f < val[r][j][i].length; f++){
+						wf.print(val[r][j][i][f] + " ");
+					}
+					wf.println();
+				}
+				wf.println();
+			}
+
+
+		}
+		wf.close();
+
+	}
+
+	static Map<String, Boolean> firstRun = new HashMap<String, Boolean>();;
+
+	private void printCFs(String fname, Dataset dt) throws IOException{
+
+
+		PrintWriter wf = new PrintWriter(new BufferedWriter(new FileWriter(fname, true)));
+		if(!firstRun.containsKey(fname)){
+			PrintWriter writer = new PrintWriter(new FileWriter(fname));
+			writer.print("");
+			writer.close();
+			firstRun.put(fname, false);
+		}
+
+		wf.append(dt.toString());
+		wf.append("\n");
+		wf.close();
+	}
+
+
 	public class ConstructedFeature{
 		char[] operators;
 		double[] features;
@@ -540,7 +598,7 @@ public class MultiCont_AveFC {
 
 	public static void main(String[] args){
 		try {
-			new MultiCont_AveFC("wine");
+			new MultiCont_AveFC(args[0]);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

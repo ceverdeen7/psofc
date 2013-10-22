@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import net.sf.javaml.core.Dataset;
 import net.sf.javaml.core.DefaultDataset;
@@ -73,6 +74,23 @@ public class MulFeatureConstruction extends Problem {
 
 		dataTem = FCFunction.calConstructFeaBing(dataTem, operators);
 
+
+		Dataset[] folds = dataTem.folds((this.getNumFolds()), new Random(100));
+		Dataset dataTrain = new DefaultDataset();
+		Dataset dataTest = new DefaultDataset();
+
+		int[] tr = { 0, 2, 3, 5, 6, 8, 9 };
+		int[] te = { 1, 4, 7 }; // 7, 4 and 6,5 changes
+//		int[] tr = { 0, 1, 2, 3, 5, 6, 7, 8, 9 };
+//		int[] te = {4}; // 7, 4 and 6,5 changes
+		for (int i = 0; i < tr.length; i++) {
+			dataTrain.addAll(folds[tr[i]]);
+		}
+		for (int i = 0; i < te.length; i++) {
+			dataTest.addAll(folds[te[i]]);
+		}
+
+
 		Map<Object, Integer> count = new HashMap<Object, Integer>();
 
 
@@ -87,17 +105,17 @@ public class MulFeatureConstruction extends Problem {
 
 //    	Object cz = clzz[0]; // TODO: Test class
 
-		Interval inv = this.findInterval(dataTem, clz);
+		Interval inv = this.findInterval(dataTrain, clz);
 
 		int totalInstance = 0;
 
-		for(int i = 0; i < dataTem.size(); i++){
-			if(inv.in(dataTem.get(i).value(0))){
+		for(int i = 0; i < dataTest.size(); i++){
+			if(inv.in(dataTest.get(i).value(0))){
 				totalInstance++;
 
-				if(!count.containsKey(dataTem.get(i).classValue())){throw new IllegalArgumentException("no such label");}
+				if(!count.containsKey(dataTest.get(i).classValue())){throw new IllegalArgumentException("no such label");}
 
-				count.put(dataTem.get(i).classValue(), count.get(dataTem.get(i).classValue()) + 1);
+				count.put(dataTest.get(i).classValue(), count.get(dataTest.get(i).classValue()) + 1);
 			}
 		}
 
@@ -121,8 +139,25 @@ public class MulFeatureConstruction extends Problem {
 
 
 	public double testFitness(Dataset dataTem, Object cz){
+		Dataset[] folds = dataTem.folds((this.getNumFolds()), new Random(100));
+		Dataset dataTrain = new DefaultDataset();
+		Dataset dataTest = new DefaultDataset();
+
+		int[] tr = { 0, 2, 3, 5, 6, 8, 9 };
+		int[] te = { 1, 4, 7 }; // 7, 4 and 6,5 changes
+//		int[] tr = { 0, 1, 2, 3, 5, 6, 7, 8, 9 };
+//		int[] te = {4}; // 7, 4 and 6,5 changes
+		for (int i = 0; i < tr.length; i++) {
+			dataTrain.addAll(folds[tr[i]]);
+		}
+		for (int i = 0; i < te.length; i++) {
+			dataTest.addAll(folds[te[i]]);
+		}
+
+
 		Map<Object, Integer> count = new HashMap<Object, Integer>();
-		// TODO: Test class
+
+
 		Object[] clzz = new Object[dataTem.classes().size()];
     	int index = 0;
     	for(Object o : dataTem.classes()){
@@ -132,18 +167,19 @@ public class MulFeatureConstruction extends Problem {
 
     	}
 
-		Interval inv = this.findInterval(dataTem, cz);
+//    	Object cz = clzz[0]; // TODO: Test class
 
+		Interval inv = this.findInterval(dataTrain, clz);
 
 		int totalInstance = 0;
 
-		for(int i = 0; i < dataTem.size(); i++){
-			if(inv.in(dataTem.get(i).value(0))){
+		for(int i = 0; i < dataTest.size(); i++){
+			if(inv.in(dataTest.get(i).value(0))){
 				totalInstance++;
 
-				if(!count.containsKey(dataTem.get(i).classValue())){throw new IllegalArgumentException("no such label");}
+				if(!count.containsKey(dataTest.get(i).classValue())){throw new IllegalArgumentException("no such label");}
 
-				count.put(dataTem.get(i).classValue(), count.get(dataTem.get(i).classValue()) + 1);
+				count.put(dataTest.get(i).classValue(), count.get(dataTest.get(i).classValue()) + 1);
 			}
 		}
 
@@ -156,13 +192,10 @@ public class MulFeatureConstruction extends Problem {
 
 		double fitness = 0;
 
-		int inx = 0;
-
 		for(double v:p){
-			System.out.println("my class: " + inx++ + ": " + v);
 			if(v == 0){continue;}
+//			System.err.println(v);
 			fitness = fitness - v * Math.log(v);
-//			System.out.println("fitness----> " + Math.log(v));
 		}
 
 		return fitness;

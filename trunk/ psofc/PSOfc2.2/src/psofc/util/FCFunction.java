@@ -44,18 +44,17 @@ public class FCFunction {
 	public static Dataset constrMulOrgDataset(Dataset org, Dataset mul, int dataSetSize, int noFeatures){
 		// multi + org datast
 		Dataset cforgTr = new DefaultDataset();
-
 		for (int i = 0; i < mul.size(); i++) {
 			Dataset temTrain = org.copy();
 
 			Instance ins = new DenseInstance(dataSetSize);
-
+			int idx = 0;
 			for (int j = 0; j < noFeatures; j++) {
-				ins.add(temTrain.get(i).get(j));
+				ins.put(idx++,temTrain.get(i).get(j));
 			}
 
 			for (int j = 0; j < org.classes().size(); j++) {
-				ins.add(mul.get(i).get(j));
+				ins.put(idx++,mul.get(i).get(j));
 			}
 
 			if (!temTrain.get(i).classValue().equals(mul.get(i).classValue())) {
@@ -65,7 +64,6 @@ public class FCFunction {
 			}
 			ins.setClassValue(temTrain.get(i).classValue());
 			cforgTr.add(ins);
-
 		}
 
 		return cforgTr;

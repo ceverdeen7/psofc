@@ -31,13 +31,13 @@ import psofc.util.OutputYan;
 import psofc.util.ReadResults;
 
 public class MultiConst {
-
+//	int changablevalue = 0;
 
 	int number_of_runs = 50;
 	double w = 0.729844;
 	double c1 = 1.49618, c2 = 1.49618;
 	int number_of_particles = 30;
-	int number_of_iterations = 70;
+	int number_of_iterations = 100;
 	Topology topology = new TopologyRing(30);
 	int numFolds = 10;
 
@@ -56,9 +56,6 @@ public class MultiConst {
 		Dataset data = FileHandler.loadDataset(new File("Data/" + fname
 				+ "/Data.data"), noFeatures, ",");
 		int dimension = noFeatures * 2 - 1;
-
-
-
 
 
 		MulFeatureConstruction problem = new MulFeatureConstruction();
@@ -155,9 +152,9 @@ public class MultiConst {
 		for (int r = 0; r < number_of_runs; r++) {
 			Seeder[r] = r * r * r * 135 + r * r * 246 + 78;
 		}
-
+		Dataset[] foldsTrain = training.folds(numFolds, new Random(1));
 		/** start PSO */
-
+//		double previousGB = 0.0; //TODO
 		for (int r = 0; r < number_of_runs; ++r) {
 			System.out.println("**********************************************************************************");
 			long initTime = System.currentTimeMillis();
@@ -177,7 +174,7 @@ public class MultiConst {
 														// attributs in feature
 														// selection();
 				s.getProblem().setNumFolds(numFolds);
-	//			s.getProblem().setFoldsTrain(foldsTrain);
+				s.getProblem().setFoldsTrain(foldsTrain);
 				s.getProblem().setThreshold(0.6);
 				s.setTopology(topology);
 				s.setVelocityClamp(new VelocityClampBasic());
@@ -194,10 +191,20 @@ public class MultiConst {
 				s.initialize();
 
 				for(int i = 0; i < number_of_iterations; ++i){
+
 					s.iterate(w);
+
+//					if(changablevalue >= this.number_of_iterations * 0.4){
+//						s.initialize();
+//						changablevalue = 0;
+//					}
+
 					double bestFitness = s.getParticle(0).getNeighborhoodFitness();
 
 					System.out.println(bestFitness);
+
+//					if(previousGB == bestFitness){changablevalue++;}
+//					previousGB = bestFitness;
 
 					int bestParticle = 0;
 
@@ -281,7 +288,7 @@ public class MultiConst {
 
 
 
-			int dataSetSize = data.size() + data.classes().size();
+			int dataSetSize = noFeatures + data.classes().size();
 
 
 			Dataset cforgTr = FCFunction.constrMulOrgDataset(training.copy(), multTrain, dataSetSize, noFeatures);
@@ -545,7 +552,7 @@ public class MultiConst {
 
 	public static void main(String[] args){
 		try {
-			new MultiConst("wine");
+			new MultiConst(args[0]);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
