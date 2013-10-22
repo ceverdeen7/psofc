@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 public class GridSh {
 
 	static String type = "multi_array";
-	static String trCls = "new";
+	static String trCls = "multi_final_10folds";
 
 	public static void main(String[] args) throws IOException {
 
@@ -27,7 +27,7 @@ public class GridSh {
 
 
 		for(String fn:files){
-			gs.output(fn, gs.setContent(fn, "run_array_mul_sep_26"));
+			gs.output(fn, gs.setContent(fn, "run_array_mul_oct_8_10folds"));
 		}
 
 
